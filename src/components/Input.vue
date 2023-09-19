@@ -34,7 +34,6 @@
 import AuthDialog from "./AuthDialog.vue";
 import { auth } from "@/plugins/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { sendPrompt } from "@/api/ai";
 
 export default {
 	emits: [
@@ -71,21 +70,12 @@ export default {
 				return;
 			}
 
-			if (!this.user) {
-				this.showAuthDialog = true;
-				return;
-			}
-
 			this.messageSent = true;
 			const prompt = messageText;
 			this.message = "";
 
 			try {
 				this.$emit("message-sent", prompt, "user");
-
-				const aiResponse = await sendPrompt(prompt);
-
-				this.$emit("message-received", aiResponse, "ai");
 			} catch (error) {
 				console.error("Error sending message.");
 			}

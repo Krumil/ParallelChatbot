@@ -1,18 +1,22 @@
 <template>
 	<v-container fluid class="d-flex flex-column chat-container">
 		<v-card v-if="!messages.length">
-			<WelcomeMessage @prompt-selected="sendPrompt" />
+			<WelcomeMessage @prompt-selected="sendMessage" />
 		</v-card>
 		<div class="message-container flex-grow-1 overflow-y-auto">
 			<v-list>
 				<v-list-item v-for="(message, index) in messages" :key="index">
-					<v-row no-gutters>
+					<v-row
+						no-gutters
+						:class="{ 'align-right': message.sender === 'ai' }"
+					>
 						<v-col cols="12" sm="auto">
-							<v-icon left>{{
-								message.sender === "user"
-									? "mdi-account"
-									: "mdi-alpha-d-circle"
-							}}</v-icon>
+							<img
+								v-if="message.sender === 'ai'"
+								src="@/assets/favicon.ico"
+								class="parallel-icon"
+							/>
+							<v-icon v-else left>mdi-account</v-icon>
 						</v-col>
 						<v-col cols="12" sm="auto">
 							<div class="icon-spacer" style="width: 10px"></div>
@@ -52,7 +56,10 @@
 					<v-list-item>
 						<v-row no-gutters>
 							<v-col cols="12" sm="auto">
-								<v-icon left>mdi-alpha-d-circle</v-icon>
+								<img
+									src="@/assets/favicon.ico"
+									class="parallel-icon"
+								/>
 							</v-col>
 							<v-col cols="12" sm="auto">
 								<div style="width: 10px"></div>
@@ -78,7 +85,6 @@
 		<div class="input-container">
 			<Input
 				@message-sent="sendMessage"
-				@message-received="displayAiResponse"
 				@clear-conversation="clearConversation"
 			/>
 		</div>
@@ -128,7 +134,9 @@ export default {
 			title: "",
 			index: null,
 			conversationId: null,
-			user: null,
+			user: {
+				uid: "123",
+			},
 			showAuthDialog: false,
 		};
 	},
@@ -136,11 +144,6 @@ export default {
 	created() {
 		this.$nextTick(() => {
 			this.scrollToBottom();
-		});
-
-		onAuthStateChanged(auth, (user) => {
-			this.user = user;
-			this.onAuthChanged(user);
 		});
 	},
 
@@ -160,61 +163,36 @@ export default {
 
 	methods: {
 		async sendMessage(message) {
+			// if (!this.user) {
+			// 	this.showAuthDialog = true;
+			// 	return;
+			// }
 			this.scrollToBottom();
 			this.isLoading = true;
-
-			const userMessage = { text: message, sender: "user" };
-			this.messages.push(userMessage);
 
 			if (!this.title) {
 				const words = message.trim().split(" ");
 				this.title = words.slice(0, 5).join(" ");
 			}
 
-			await this.updateConversation();
-		},
-
-		async sendPrompt(prompt) {
-			if (!this.user) {
-				this.showAuthDialog = true;
-				return;
-			}
-			this.messages.push({ text: prompt, sender: "user" });
+			this.messages.push({ text: message, sender: "user" });
 			this.isLoading = true;
 
 			try {
-				this.$emit("message-sent", prompt, "user");
-
-				const aiResponse = await sendPrompt(prompt);
-
+				const aiResponse = await sendPrompt(message, this.messages);
 				this.messages.push({ text: aiResponse, sender: "ai" });
 
-				if (!this.title) {
-					const words = prompt.trim().split(" ");
-					this.title = words.slice(0, 5).join(" ");
-				}
-
-				await this.updateConversation();
+				// await this.updateConversation();
 				this.isLoading = false;
 			} catch (error) {
 				console.error("Error sending message:", error);
 				this.isLoading = false;
 			}
 		},
-
-		async displayAiResponse(message) {
-			this.scrollToBottom();
-			this.isLoading = false;
-
-			const aiMessage = { text: message, sender: "ai" };
-			this.messages.push(aiMessage);
-
-			await this.updateConversation();
-		},
-
 		async updateConversation() {
 			if (!this.conversationId) {
-				this.conversationId = `${this.user.uid}_${Date.now()}`;
+				this.conversationId = `123_${Date.now()}`;
+				// this.conversationId = `${this.user.uid}_${Date.now()}`;
 				this.conversationRef = doc(
 					db,
 					"conversations",
@@ -260,7 +238,10 @@ export default {
 		},
 
 		onAuthChanged(user) {
-			this.user = user;
+			// this.user = user;
+			this.user = {
+				uid: "123",
+			};
 		},
 	},
 };
@@ -296,6 +277,13 @@ export default {
 .input-container {
 	position: sticky;
 	bottom: 0;
+}
+
+.parallel-icon {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	object-fit: cover;
 }
 
 @media (max-width: 600px) {

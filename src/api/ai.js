@@ -1,9 +1,10 @@
 import axios from "axios";
 
-export async function sendPrompt(message) {
+export async function sendPrompt(message, chatHistory) {
 	try {
 		const response = await axios.post(import.meta.env.VITE_API_URL, {
 			prompt: message,
+			chat_history: chatHistory,
 		});
 		return response.data.message;
 	} catch (error) {
