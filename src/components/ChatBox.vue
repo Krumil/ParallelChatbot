@@ -118,14 +118,12 @@ export default {
 		WelcomeMessage,
 		AuthDialog,
 	},
-
 	props: {
 		conversation: {
 			type: Object,
 			default: () => ({}),
 		},
 	},
-
 	data() {
 		return {
 			messages: [],
@@ -140,13 +138,11 @@ export default {
 			showAuthDialog: false,
 		};
 	},
-
 	created() {
 		this.$nextTick(() => {
 			this.scrollToBottom();
 		});
 	},
-
 	watch: {
 		conversation(newConversation) {
 			if (newConversation.messages && newConversation.messages.length) {
@@ -160,8 +156,33 @@ export default {
 			}
 		},
 	},
-
 	methods: {
+		initializeSSE(user_input) {
+			this.eventSource = new EventSource(
+				import.meta.env.VITE_API_URL +
+					`/query_bot?prompt=${encodeURIComponent(user_input)}`
+			);
+
+			this.eventSource.onmessage = (event) => {
+				// console.log("event", event.data);
+				// check if last message is by human, if yes then add bot response
+				const token = JSON.parse(event.data);
+				if (this.messages[this.messages.length - 1].sender === "user") {
+					this.messages.push({
+						text: token,
+						sender: "ai",
+					});
+				} else {
+					// if last message is by bot, then append to the last message
+					this.messages[this.messages.length - 1].text += token;
+				}
+			};
+
+			this.eventSource.onerror = (error) => {
+				console.error("EventSource failed:", error);
+				this.eventSource.close();
+			};
+		},
 		async sendMessage(message) {
 			// if (!this.user) {
 			// 	this.showAuthDialog = true;
@@ -179,8 +200,9 @@ export default {
 			this.isLoading = true;
 
 			try {
-				const aiResponse = await sendPrompt(message, this.messages);
-				this.messages.push({ text: aiResponse, sender: "ai" });
+				// const aiResponse = await sendPrompt(message, this.messages);
+				this.initializeSSE(message);
+				// this.messages.push({ text: aiResponse, sender: "ai" });
 
 				// await this.updateConversation();
 				this.isLoading = false;
@@ -243,6 +265,11 @@ export default {
 				uid: "123",
 			};
 		},
+	},
+	beforeDestroy() {
+		if (this.eventSource) {
+			this.eventSource.close();
+		}
 	},
 };
 </script>

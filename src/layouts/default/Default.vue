@@ -2,13 +2,13 @@
 	<v-card>
 		<v-layout>
 			<v-app-bar prominent>
-				<v-app-bar-nav-icon
+				<!-- <v-app-bar-nav-icon
 					variant="text"
 					@click.stop="drawer = !drawer"
-				></v-app-bar-nav-icon>
+				></v-app-bar-nav-icon> -->
 				<v-toolbar-title>
-					<v-icon icon="mdi-alpha-d-circle" />
-					Krumil
+					<img src="@/assets/favicon.ico" class="parallel-icon" />
+					Parallel Chatbot
 				</v-toolbar-title>
 				<v-spacer></v-spacer>
 				<ThemeToggler />
@@ -52,3 +52,11 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.parallel-icon {
+	height: 24px;
+	width: 24px;
+	margin-right: 10px;
+}
+</style>

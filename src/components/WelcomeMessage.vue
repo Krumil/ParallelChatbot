@@ -24,9 +24,9 @@ export default {
 	data() {
 		return {
 			examplePrompts: [
-				"What does FE mean?",
+				"What does the card 'Primea Conduit' do?",
 				"What are the keywords of the game?",
-				"How much renown do i gain with echos?",
+				"How much renown do I gain with echos?",
 			],
 		};
 	},
