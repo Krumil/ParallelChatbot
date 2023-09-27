@@ -5,7 +5,10 @@
 		</v-card>
 		<div class="message-container flex-grow-1 overflow-y-auto">
 			<v-list>
-				<v-list-item v-for="(message, index) in messages" :key="index">
+				<v-list-item
+					v-for="(message, index) in processedMessage"
+					:key="index"
+				>
 					<v-row
 						no-gutters
 						:class="{ 'align-right': message.sender === 'ai' }"
@@ -39,9 +42,9 @@
 								</template>
 								<template v-else>
 									<v-list-item-title
+										v-html="processedMessage.text"
 										:style="{ 'white-space': 'pre-wrap' }"
-										>{{ message.text }}</v-list-item-title
-									>
+									></v-list-item-title>
 								</template>
 							</div>
 						</v-col>
@@ -137,6 +140,20 @@ export default {
 			},
 			showAuthDialog: false,
 		};
+	},
+	computed: {
+		processedMessages() {
+			return this.messages.map((message) => {
+				if (message.sender === "ai") {
+					const regex = /\[(.*?)\]\((.*?)\)/g;
+					message.text = message.text.replace(
+						regex,
+						'<a href="$2" target="_blank">$1</a>'
+					);
+				}
+				return message;
+			});
+		},
 	},
 	created() {
 		this.$nextTick(() => {
