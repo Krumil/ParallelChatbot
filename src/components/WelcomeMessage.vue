@@ -26,7 +26,7 @@ export default {
 			examplePrompts: [
 				"What does the card 'Primea Conduit' do?",
 				"What are the keywords of the game?",
-				"How much renown do I gain with echos?",
+				"What is renown and how can i gain it?",
 			],
 		};
 	},

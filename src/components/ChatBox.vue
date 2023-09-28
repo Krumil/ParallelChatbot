@@ -6,7 +6,7 @@
 		<div class="message-container flex-grow-1 overflow-y-auto">
 			<v-list>
 				<v-list-item
-					v-for="(message, index) in processedMessage"
+					v-for="(message, index) in processedMessages"
 					:key="index"
 				>
 					<v-row
@@ -39,10 +39,15 @@
 										message.sender === 'ai'
 									"
 								>
+									<v-icon left>{{
+										message.sender === "user"
+											? "mdi-account"
+											: "mdi-alpha-d-circle"
+									}}</v-icon>
 								</template>
 								<template v-else>
 									<v-list-item-title
-										v-html="processedMessage.text"
+										v-html="message.text"
 										:style="{ 'white-space': 'pre-wrap' }"
 									></v-list-item-title>
 								</template>
@@ -129,6 +134,7 @@ export default {
 	},
 	data() {
 		return {
+			userId: null,
 			messages: [],
 			conversationRef: null,
 			isLoading: false,
@@ -140,6 +146,21 @@ export default {
 			},
 			showAuthDialog: false,
 		};
+	},
+	created() {
+		// Check if user_id exists in localStorage
+		if (!localStorage.getItem("user_id")) {
+			// If not, generate a new user_id and store it in localStorage
+			const newUserId = "user_" + Date.now();
+			localStorage.setItem("user_id", newUserId);
+		}
+
+		// Set the userId data property
+		this.userId = localStorage.getItem("user_id");
+
+		this.$nextTick(() => {
+			this.scrollToBottom();
+		});
 	},
 	computed: {
 		processedMessages() {
@@ -177,7 +198,9 @@ export default {
 		initializeSSE(user_input) {
 			this.eventSource = new EventSource(
 				import.meta.env.VITE_API_URL +
-					`/query_bot?prompt=${encodeURIComponent(user_input)}`
+					`/query_bot?prompt=${encodeURIComponent(
+						user_input
+					)}&user_id=${this.userId}`
 			);
 
 			this.eventSource.onmessage = (event) => {
@@ -214,7 +237,7 @@ export default {
 			}
 
 			this.messages.push({ text: message, sender: "user" });
-			this.isLoading = true;
+			this.messages.push({ text: "", sender: "ai" });
 
 			try {
 				// const aiResponse = await sendPrompt(message, this.messages);
