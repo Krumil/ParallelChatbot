@@ -288,6 +288,7 @@ export default {
 
 		clearConversation() {
 			this.messages = [];
+			this.userId = "user_" + Date.now();
 		},
 
 		onAuthChanged(user) {
