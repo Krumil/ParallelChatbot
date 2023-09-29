@@ -103,28 +103,24 @@
 				>Krumil</a
 			>
 		</p>
-		<AuthDialog
+		<!-- <AuthDialog
 			:show="showAuthDialog"
 			@auth-changed="onAuthChanged"
 			@dialog-closed="showAuthDialog = false"
-		/>
+		/> -->
 	</v-container>
 </template>
 
 <script>
 import Input from "./Input.vue";
 import WelcomeMessage from "./WelcomeMessage.vue";
-import AuthDialog from "./AuthDialog.vue";
-import { db, auth } from "@/plugins/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
-import { sendPrompt } from "@/api/ai";
+// import AuthDialog from "./AuthDialog.vue";
 
 export default {
 	components: {
 		Input,
 		WelcomeMessage,
-		AuthDialog,
+		// AuthDialog,
 	},
 	props: {
 		conversation: {
@@ -147,21 +143,6 @@ export default {
 			showAuthDialog: false,
 		};
 	},
-	created() {
-		// Check if user_id exists in localStorage
-		if (!localStorage.getItem("user_id")) {
-			// If not, generate a new user_id and store it in localStorage
-			const newUserId = "user_" + Date.now();
-			localStorage.setItem("user_id", newUserId);
-		}
-
-		// Set the userId data property
-		this.userId = localStorage.getItem("user_id");
-
-		this.$nextTick(() => {
-			this.scrollToBottom();
-		});
-	},
 	computed: {
 		processedMessages() {
 			return this.messages.map((message) => {
@@ -176,11 +157,6 @@ export default {
 			});
 		},
 	},
-	created() {
-		this.$nextTick(() => {
-			this.scrollToBottom();
-		});
-	},
 	watch: {
 		conversation(newConversation) {
 			if (newConversation.messages && newConversation.messages.length) {
@@ -194,6 +170,22 @@ export default {
 			}
 		},
 	},
+	mounted() {
+		// Check if user_id exists in localStorage
+		// if (!localStorage.getItem("user_id")) {
+		// 	// If not, generate a new user_id and store it in localStorage
+		// 	const newUserId = "user_" + Date.now();
+		// 	localStorage.setItem("user_id", newUserId);
+		// }
+
+		// Set the userId data property
+		// this.userId = localStorage.getItem("user_id");
+		this.userId = "user_" + Date.now();
+
+		this.$nextTick(() => {
+			this.scrollToBottom();
+		});
+	},
 	methods: {
 		initializeSSE(user_input) {
 			this.eventSource = new EventSource(
@@ -204,16 +196,19 @@ export default {
 			);
 
 			this.eventSource.onmessage = (event) => {
-				// console.log("event", event.data);
-				// check if last message is by human, if yes then add bot response
+				// If the last message was from the user or there's no message yet, add a new AI message.
+				// Otherwise, append to the last AI message.
 				const token = JSON.parse(event.data);
-				if (this.messages[this.messages.length - 1].sender === "user") {
+				console.log(token);
+				if (
+					!this.messages.length ||
+					this.messages[this.messages.length - 1].sender === "user"
+				) {
 					this.messages.push({
 						text: token,
 						sender: "ai",
 					});
 				} else {
-					// if last message is by bot, then append to the last message
 					this.messages[this.messages.length - 1].text += token;
 				}
 			};
@@ -224,10 +219,6 @@ export default {
 			};
 		},
 		async sendMessage(message) {
-			// if (!this.user) {
-			// 	this.showAuthDialog = true;
-			// 	return;
-			// }
 			this.scrollToBottom();
 			this.isLoading = true;
 
@@ -237,14 +228,9 @@ export default {
 			}
 
 			this.messages.push({ text: message, sender: "user" });
-			this.messages.push({ text: "", sender: "ai" });
 
 			try {
-				// const aiResponse = await sendPrompt(message, this.messages);
 				this.initializeSSE(message);
-				// this.messages.push({ text: aiResponse, sender: "ai" });
-
-				// await this.updateConversation();
 				this.isLoading = false;
 			} catch (error) {
 				console.error("Error sending message:", error);

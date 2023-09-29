@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
 	<v-dialog
 		:model-value="show"
 		@update:model-value="$emit('update:show', $event)"
@@ -62,4 +62,4 @@ export default {
 		},
 	},
 };
-</script>
+</script> -->

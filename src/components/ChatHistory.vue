@@ -26,16 +26,16 @@
 </template>
 
 <script>
-import { auth, db } from "@/plugins/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import {
-	collection,
-	query,
-	where,
-	getDocs,
-	doc,
-	deleteDoc,
-} from "firebase/firestore";
+// import { auth, db } from "@/plugins/firebase";
+// import { onAuthStateChanged } from "firebase/auth";
+// import {
+// 	collection,
+// 	query,
+// 	where,
+// 	getDocs,
+// 	doc,
+// 	deleteDoc,
+// } from "firebase/firestore";
 
 export default {
 	data() {

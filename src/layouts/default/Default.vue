@@ -12,13 +12,12 @@
 				</v-toolbar-title>
 				<v-spacer></v-spacer>
 				<ThemeToggler />
-				<AuthButton />
 			</v-app-bar>
 
 			<v-navigation-drawer v-model="drawer" app temporary left>
-				<ChatHistory
+				<!-- <ChatHistory
 					@conversation-selected="selectedConversation = $event"
-				/>
+				/> -->
 			</v-navigation-drawer>
 
 			<v-main
@@ -33,15 +32,15 @@
 
 <script>
 import ThemeToggler from "@/components/ThemeToggler.vue";
-import AuthButton from "@/components/AuthButton.vue";
-import ChatHistory from "@/components/ChatHistory.vue";
+// import AuthButton from "@/components/AuthButton.vue";
+// import ChatHistory from "@/components/ChatHistory.vue";
 import ChatBox from "@/components/ChatBox.vue";
 
 export default {
 	components: {
 		ThemeToggler,
-		AuthButton,
-		ChatHistory,
+		// AuthButton,
+		// ChatHistory,
 		ChatBox,
 	},
 	data() {

@@ -21,20 +21,11 @@
 				>
 				</v-textarea>
 			</v-row>
-			<AuthDialog
-				:show="showAuthDialog"
-				@auth-changed="onAuthChanged"
-				@dialog-closed="showAuthDialog = false"
-			/>
 		</v-container>
 	</v-form>
 </template>
 
 <script>
-import AuthDialog from "./AuthDialog.vue";
-import { auth } from "@/plugins/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-
 export default {
 	emits: [
 		"messageSent",
@@ -42,26 +33,13 @@ export default {
 		"message-sent",
 		"message-received",
 	],
-	components: {
-		AuthDialog,
-	},
-
 	data() {
 		return {
 			user: null,
-			showAuthDialog: false,
 			message: "",
 			messageSent: false,
 		};
 	},
-
-	created() {
-		onAuthStateChanged(auth, (user) => {
-			this.user = user;
-			this.onAuthChanged(user);
-		});
-	},
-
 	methods: {
 		async sendMessage() {
 			const messageText = this.message.trim();
@@ -88,10 +66,6 @@ export default {
 		startNewConversation() {
 			this.$emit("clear-conversation");
 			this.messageSent = false;
-		},
-
-		onAuthChanged(user) {
-			this.user = user;
 		},
 	},
 };
