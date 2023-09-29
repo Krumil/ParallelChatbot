@@ -196,10 +196,16 @@ export default {
 			);
 
 			this.eventSource.onmessage = (event) => {
-				// If the last message was from the user or there's no message yet, add a new AI message.
-				// Otherwise, append to the last AI message.
+				if (this.isLoading) {
+					this.isLoading = false;
+				}
+
 				const token = JSON.parse(event.data);
-				console.log(token);
+				if (token === "[DONE]") {
+					this.eventSource.close();
+					return;
+				}
+
 				if (
 					!this.messages.length ||
 					this.messages[this.messages.length - 1].sender === "user"
@@ -231,7 +237,6 @@ export default {
 
 			try {
 				this.initializeSSE(message);
-				this.isLoading = false;
 			} catch (error) {
 				console.error("Error sending message:", error);
 				this.isLoading = false;
