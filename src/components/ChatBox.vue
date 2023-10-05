@@ -98,8 +98,6 @@
 			/>
 		</div>
 		<p class="text-center text-caption">
-			<strong>Krumil - </strong>
-			<span>AI-powered chatbot - </span>
 			<a v-bind:href="'https://github.com/Krumil'" target="_blank"
 				>Krumil</a
 			>

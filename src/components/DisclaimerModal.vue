@@ -8,12 +8,11 @@
 				<p>
 					Please be aware that the AI chatbot is designed to provide
 					general information about Parallel and may not always be
-					accurate.
+					accurate. I assure you, this will make stuff up.
 				</p>
 				<p>
 					Do not rely on the AI chatbot for critical decisions,
-					especially financial ones. This application is not intended
-					to provide financial advice.
+					especially financial ones.
 				</p>
 			</v-card-text>
 			<v-card-actions>
@@ -30,8 +29,8 @@
 export default {
 	data() {
 		return {
-			// showDisclaimer: !localStorage.getItem("disclaimerAcknowledged"),
-			showDisclaimer: true,
+			showDisclaimer: !localStorage.getItem("disclaimerAcknowledged"),
+			// showDisclaimer: true,
 		};
 	},
 	methods: {
