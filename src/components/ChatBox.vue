@@ -1,5 +1,6 @@
 <template>
 	<v-container fluid class="d-flex flex-column chat-container">
+		<DisclaimerModal />
 		<v-card v-if="!messages.length">
 			<WelcomeMessage @prompt-selected="sendMessage" />
 		</v-card>
@@ -114,12 +115,14 @@
 <script>
 import Input from "./Input.vue";
 import WelcomeMessage from "./WelcomeMessage.vue";
+import DisclaimerModal from "./DisclaimerModal.vue";
 // import AuthDialog from "./AuthDialog.vue";
 
 export default {
 	components: {
 		Input,
 		WelcomeMessage,
+		DisclaimerModal,
 		// AuthDialog,
 	},
 	props: {
@@ -171,15 +174,6 @@ export default {
 		},
 	},
 	mounted() {
-		// Check if user_id exists in localStorage
-		// if (!localStorage.getItem("user_id")) {
-		// 	// If not, generate a new user_id and store it in localStorage
-		// 	const newUserId = "user_" + Date.now();
-		// 	localStorage.setItem("user_id", newUserId);
-		// }
-
-		// Set the userId data property
-		// this.userId = localStorage.getItem("user_id");
 		this.userId = "user_" + Date.now();
 
 		this.$nextTick(() => {
